@@ -51,3 +51,53 @@ steps:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'spring-app-artifact'
       publishLocation: 'Container'
+  - task: XplatGenerateReleaseNotes@4
+    inputs:
+      outputfile: '$(Build.Repository.LocalPath)\releasenotes_$(Build.BuildId).md'
+      templateLocation: 'InLine'
+      inlinetemplate: |
+        ## Build {{buildDetails.buildNumber}}
+        * **Branch**: {{buildDetails.sourceBranch}}
+        * **Author**: {{buildDetails.requestedFor.displayName}}
+        * **Commit**: {{buildDetails.sourceVersion}}
+      dumpPayloadToConsole: false
+      dumpPayloadToFile: false
+      replaceFile: True
+      getParentsAndChildren: False
+      getAllParents: False
+      getIndirectPullRequests: False
+      checkForManuallyLinkedWI: False
+      wiqlFromTarget: 'WorkItems'
+      considerPartiallySuccessfulReleases: False
+      stopOnError: False
+  - task: CopyFiles@2
+    displayName: 'Copy Release Notes to Wiki Folder'
+    inputs:
+      SourceFolder: '$(Build.Repository.LocalPath)'
+      Contents: 'releasenotes_$(Build.BuildId).md'
+      TargetFolder: '$(Build.Repository.LocalPath)/wiki'
+      CleanTargetFolder: true
+      Overwrite: true
+  - script: |
+      del "$(Build.Repository.LocalPath)\releasenotes_$(Build.BuildId).md"
+    displayName: 'Delete Original Release Notes File'
+  
+  - task: CmdLine@2
+    displayName: 'Commit Release Notes to Wiki Folder'
+    inputs:
+      script: |
+        git checkout master
+        git pull
+        git config --global user.email "bilel.bouazizi3@gmail.com"
+        git config --global user.name "Bilel Bouazizi"
+        git remote add origin https://dev.azure.com/bilelbouazizi3/_git/bilelbouazizi3
+        git add .
+        git commit -m "[skip ci] Update release notes in wiki folder"
+        git push origin HEAD:master
+
+
+
+
+
+
+ 
