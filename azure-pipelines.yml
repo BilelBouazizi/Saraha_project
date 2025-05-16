@@ -82,18 +82,42 @@ steps:
       rm -f "$(Build.Repository.LocalPath)/releasenotes_$(Build.BuildId).md"
     displayName: 'Delete Original Release Notes File'
   
+  # Place juste avant ta tâche CmdLine@2
+  - checkout: self
+    persistCredentials: true     # <— permet d’utiliser $(SYSTEM_ACCESSTOKEN) pour le push
+
+# ...
+
   - task: CmdLine@2
     displayName: 'Commit Release Notes to Wiki Folder'
     inputs:
       script: |
+        set -e
+
+     
+        git fetch origin main:main
+
+     
         git checkout main
-        git pull
-        git config --global user.email "bilel.bouazizi3@gmail.com"
-        git config --global user.name "Bilel Bouazizi"
-        git remote add origin https://dev.azure.com/bilelbouazizi3/_git/bilelbouazizi3
-        git add .
-        git commit -m "[skip ci] Update release notes in wiki folder"
-        git push origin HEAD:main
+
+    
+        git pull origin main
+
+     
+        git config user.email "bilel.bouazizi3@hotmail.com"
+        git config user.name  "bilel bouazizi"
+
+     
+        git add wiki/
+
+     
+        if ! git diff --cached --quiet; then
+          git commit -m "[skip ci] Update release notes in wiki folder"
+          git push origin main
+        else
+          echo "No changes to commit"
+        fi
+
 
 
 
