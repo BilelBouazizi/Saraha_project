@@ -26,7 +26,7 @@ steps:
   - task: Maven@3
     displayName: 'Build et package Maven'
     inputs:
-      mavenPomFile: 'pom.xml'
+      mavenPomFile: 'saraha/pom.xml'
       goals: 'clean package'
 
   # 5) Debug : vérifier qu'on a bien target/ après Maven
