@@ -13,6 +13,7 @@ steps:
     inputs:
       versionSpec: '11'
       jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
 
   # 4) On copie le JAR généré depuis le dossier target
   - task: CopyFiles@2
