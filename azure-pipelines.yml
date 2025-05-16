@@ -86,14 +86,14 @@ steps:
     displayName: 'Commit Release Notes to Wiki Folder'
     inputs:
       script: |
-        git checkout master
+        git checkout main
         git pull
         git config --global user.email "bilel.bouazizi3@gmail.com"
         git config --global user.name "Bilel Bouazizi"
         git remote add origin https://dev.azure.com/bilelbouazizi3/_git/bilelbouazizi3
         git add .
         git commit -m "[skip ci] Update release notes in wiki folder"
-        git push origin HEAD:master
+        git push origin HEAD:main
 
 
 
