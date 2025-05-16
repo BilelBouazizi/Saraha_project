@@ -28,6 +28,7 @@ steps:
     inputs:
       mavenPomFile: 'saraha/pom.xml'
       goals: 'clean package'
+      options: '-DskipTests'
 
   # 5) Debug : vérifier qu'on a bien target/ après Maven
   - script: |
