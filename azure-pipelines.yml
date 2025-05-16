@@ -79,7 +79,7 @@ steps:
       CleanTargetFolder: true
       Overwrite: true
   - script: |
-      del "$(Build.Repository.LocalPath)\releasenotes_$(Build.BuildId).md"
+      rm -f "$(Build.Repository.LocalPath)/releasenotes_$(Build.BuildId).md"
     displayName: 'Delete Original Release Notes File'
   
   - task: CmdLine@2
