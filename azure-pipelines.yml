@@ -10,37 +10,40 @@ steps:
 
   # 2) On installe Java 11
   - task: JavaToolInstaller@0
+    displayName: 'Installer Java 11'
     inputs:
       versionSpec: '11'
       jdkArchitectureOption: 'x64'
       jdkSourceOption: 'PreInstalled'
-  # … avant ton Maven@3
-  - script: |
-    echo "=== Contenu du workspace ==="
-    ls -R $(System.DefaultWorkingDirectory)
-  displayName: 'Debug – afficher workspace'
 
+  # 3) Debug : afficher la structure du workspace avant Maven
+  - script: |
+      echo "=== Contenu du workspace avant Maven ==="
+      ls -R $(System.DefaultWorkingDirectory)
+    displayName: 'Debug – afficher workspace avant Maven'
+
+  # 4) Build et package Maven
   - task: Maven@3
     displayName: 'Build et package Maven'
     inputs:
       mavenPomFile: 'pom.xml'
       goals: 'clean package'
 
-  # Debug : vérifie qu'on a bien target/
+  # 5) Debug : vérifier qu'on a bien target/ après Maven
   - script: |
-      echo "=== Contenu du workspace ==="
+      echo "=== Contenu du workspace après Maven ==="
       ls -R $(System.DefaultWorkingDirectory)
-    displayName: 'Debug – afficher workspace'
- 
-  # 4) On copie le JAR généré depuis le dossier target
+    displayName: 'Debug – afficher workspace après Maven'
+
+  # 6) On copie le JAR généré depuis le dossier target
   - task: CopyFiles@2
     displayName: 'Stage artifact'
     inputs:
-      SourceFolder: 'target'        # puisque pom.xml est à la racine, target/ s’y trouvera
+      SourceFolder: 'target'
       Contents: '*.jar'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-  # 5) On publie cet artifact pour qu’il soit disponible en CI/CD
+  # 7) On publie cet artifact pour qu’il soit disponible en CI/CD
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
     inputs:
