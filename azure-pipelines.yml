@@ -14,7 +14,12 @@ steps:
       versionSpec: '11'
       jdkArchitectureOption: 'x64'
       jdkSourceOption: 'PreInstalled'
-  
+  # … avant ton Maven@3
+  - script: |
+    echo "=== Contenu du workspace ==="
+    ls -R $(System.DefaultWorkingDirectory)
+  displayName: 'Debug – afficher workspace'
+
   - task: Maven@3
     displayName: 'Build et package Maven'
     inputs:
