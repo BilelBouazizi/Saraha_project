@@ -1,36 +1,39 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  - main
 
 pool:
-  vmImage: ubuntu-latest
-
+  vmImage: 'ubuntu-latest'
 
 steps:
+  # 1) On s'assure bien que le code est bien checkouté
+  - checkout: self
+
+  # 2) On installe Java 17
   - task: JavaToolInstaller@0
     inputs:
-      versionSpec: '11'  # Adjust based on your Java version
+      versionSpec: '11'
       jdkArchitectureOption: 'x64'
-      jdkSourceOption: 'PreInstalled'
 
-  - script: |
-      mvn clean package
-    displayName: 'Build Spring Boot App with Maven'
-
-  - task: CopyFiles@2
+  # 3) On lance Maven en pointant directement le POM à la racine
+  - task: Maven@3
+    displayName: 'Build et package avec Maven'
     inputs:
-      SourceFolder: '$(System.DefaultWorkingDirectory)/target'
+      mavenPomFile: 'pom.xml'      # <-- ici, chemin relatif vers ton pom
+      goals: 'clean package'
+      options: '-X'                # optionnel pour avoir plus de logs en cas d’erreur
+
+  # 4) On copie le JAR généré depuis le dossier target
+  - task: CopyFiles@2
+    displayName: 'Stage artifact'
+    inputs:
+      SourceFolder: 'target'        # puisque pom.xml est à la racine, target/ s’y trouvera
       Contents: '*.jar'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Copy JAR to Artifact Staging'
 
+  # 5) On publie cet artifact pour qu’il soit disponible en CI/CD
   - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
     inputs:
       PathtoPublish: '$(Build.ArtifactStagingDirectory)'
       ArtifactName: 'spring-app-artifact'
       publishLocation: 'Container'
-    displayName: 'Publish Artifact'
