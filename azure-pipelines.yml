@@ -39,7 +39,7 @@ steps:
   - task: CopyFiles@2
     displayName: 'Stage artifact'
     inputs:
-      SourceFolder: '(System.DefaultWorkingDirectory)/saraha/target'
+      SourceFolder: '$(System.DefaultWorkingDirectory)/saraha/target'
       Contents: '*.jar'
       TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
